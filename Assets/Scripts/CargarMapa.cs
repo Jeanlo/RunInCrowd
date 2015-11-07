@@ -4,10 +4,16 @@ using System.IO;
 
 public class CargarMapa : MonoBehaviour {
     string archivo = "archivo.txt";
-    public Transform PF_Block01;
+    public Transform PF_Bloque;
+    public Transform PF_Bloque2;
+    public Transform PF_Personaje;
+    public Transform PF_Enemigo;
+    public Transform PF_Caja;
+    public Transform PF_Final;
+
+    public float Contador { get; set; }
 
     void Start() {
-        float contador = 0;
         var sr = new StreamReader(Application.dataPath + "/" + archivo);
         while (!sr.EndOfStream)
         {
@@ -17,25 +23,42 @@ public class CargarMapa : MonoBehaviour {
             {
                 switch (contenido2[i])
                 {
+                    case "#":
+                        Instanciador(i, PF_Bloque, contenido2.Length);
+                        break;
+
+                    case "$":
+                        Instanciador(i, PF_Bloque2, contenido2.Length);
+                        break;
+
                     case "@":
-                        Instantiate(PF_Block01, new Vector3((float)(i / 4f) * PF_Block01.transform.localScale.x, contador), transform.rotation);
-                        if(i+1 == contenido2.Length)
-                            contador += (float)PF_Block01.transform.localScale.y * 1 / -2.9f;
+                        Instanciador(i, PF_Caja, contenido2.Length);
+                        break;
+
+                    case "E":
+                        Instanciador(i, PF_Enemigo, contenido2.Length);
+                        break;
+
+                    case "P":
+                        Instanciador(i, PF_Personaje, contenido2.Length);
+                        break;
+
+                    case "X":
+                        Instanciador(i, PF_Final, contenido2.Length);
                         break;
                 }
-
-                if (i + 1 == contenido2.Length)
-                    contador += (float)PF_Block01.transform.localScale.y * 1 / -2.9f;
             }
+
+            Contador += (float)PF_Bloque.transform.localScale.y * 1 / -4f;
         }
 
         sr.Close();
 
 
     }
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+
+    public void Instanciador(int i, Transform aInstanciar, int limite)
+    {
+        Instantiate(aInstanciar, new Vector3((float)((i / 3.6f) * aInstanciar.transform.localScale.x) - 6.8f, Contador, aInstanciar.localPosition.z), transform.rotation);
+    }
 }

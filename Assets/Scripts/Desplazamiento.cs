@@ -2,7 +2,9 @@
 using System.Collections;
 using System;
 
-public class Desplazamiento : MonoBehaviour {
+public class Desplazamiento : MonoBehaviour
+{
+
     public enum Direcciones
     {
         Arriba,
@@ -14,26 +16,32 @@ public class Desplazamiento : MonoBehaviour {
     public DateTime TiempoUltimaActualizacion { get; set; }
 
     public Vector3 Velocidad { get; set; }
-                                       // Use this for initialization
-    void Start ()
+
+    public bool Saltando { get; set; }
+
+    public float PosicionInicialY { get; set; }
+
+    void Awake ()
     {
-        Velocidad = new Vector3(4.5f, 1f, 0);
+        Velocidad = new Vector3(4.5f, 3.4f, 0);
         TiempoUltimaActualizacion = DateTime.Now;
         DireccionActual = Direcciones.Reposo;
+        PosicionInicialY = transform.localPosition.y;
     }
-	
-	// Update is called once per frame
+
 	void Update ()
     {
         Desplazarse();
         EmpezarSalto();
         Saltar();
 
-        if (this.transform.localPosition.y < -3.84)
+        if (this.transform.localPosition.y < PosicionInicialY)
         {
             this.gameObject.GetComponent<Rigidbody2D>().gravityScale = 0f;
+            this.gameObject.GetComponent<Rigidbody2D>().isKinematic = true;
             DireccionActual = Direcciones.Reposo;
-            this.transform.localPosition = new Vector3(this.transform.localPosition.x, -3.84f, 0);
+            this.transform.localPosition = new Vector3(this.transform.localPosition.x, PosicionInicialY, 0);
+            Saltando = false;
         }
     }
 
@@ -45,7 +53,7 @@ public class Desplazamiento : MonoBehaviour {
 
     public void EmpezarSalto()
     {
-        if (Input.GetKey(KeyCode.Space) || Input.GetButton("Jump"))
+        if ((Input.GetKey(KeyCode.Space) || Input.GetButton("Jump")) && !Saltando)
             DireccionActual = Direcciones.Arriba;
     }
 
@@ -54,8 +62,28 @@ public class Desplazamiento : MonoBehaviour {
         if (DireccionActual == Direcciones.Arriba && DateTime.Now.Subtract(TiempoUltimaActualizacion) > TimeSpan.FromSeconds(0.12))
         {
             transform.Translate(0, Velocidad.y, 0);
-            this.gameObject.GetComponent<Rigidbody2D>().gravityScale = 6f;
+            this.gameObject.GetComponent<Rigidbody2D>().gravityScale = 0.9f;
+            Saltando = true;
+            DireccionActual = Direcciones.Reposo;
             TiempoUltimaActualizacion = DateTime.Now;
         }
+    }
+
+
+
+    public void OnTriggerEnter2D(Collider2D colisionado)
+    {
+        if (colisionado.name.Contains("Bloque2") || colisionado.name.Contains("Caja"))
+        {
+            this.gameObject.GetComponent<Rigidbody2D>().isKinematic = true;
+            TiempoUltimaActualizacion = DateTime.Now;
+            Saltando = false;
+        }
+    }
+
+    public void OnTriggerExit2D(Collider2D colisionado)
+    {
+        if (colisionado.name.Contains("Bloque2") || colisionado.name.Contains("Caja"))
+            this.gameObject.GetComponent<Rigidbody2D>().isKinematic = false;
     }
 }
