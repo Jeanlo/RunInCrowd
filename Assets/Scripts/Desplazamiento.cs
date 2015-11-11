@@ -20,6 +20,7 @@ public class Desplazamiento : MonoBehaviour
     public bool Saltando { get; set; }
 
     public float PosicionInicialY { get; set; }
+	public int Puntuacion;
 
     void Awake ()
     {
@@ -35,6 +36,7 @@ public class Desplazamiento : MonoBehaviour
         EmpezarSalto();
         Saltar();
 
+		Puntaje.PuntajeActual = (int)transform.position.x / 10;
         if (this.transform.localPosition.y < PosicionInicialY)
         {
             this.gameObject.GetComponent<Rigidbody2D>().gravityScale = 0f;
@@ -59,7 +61,7 @@ public class Desplazamiento : MonoBehaviour
 
     public void Saltar()
     {
-        if (DireccionActual == Direcciones.Arriba && DateTime.Now.Subtract(TiempoUltimaActualizacion) > TimeSpan.FromSeconds(0.12))
+        if (DireccionActual == Direcciones.Arriba && DateTime.Now.Subtract(TiempoUltimaActualizacion) > TimeSpan.FromSeconds(0.04))
         {
             transform.Translate(0, Velocidad.y, 0);
             this.gameObject.GetComponent<Rigidbody2D>().gravityScale = 0.9f;
@@ -79,6 +81,11 @@ public class Desplazamiento : MonoBehaviour
             TiempoUltimaActualizacion = DateTime.Now;
             Saltando = false;
         }
+		if (colisionado.name == "PF_Enemigo(Clone)")
+		{
+			Destroy(this.gameObject);
+			Application.Quit();
+		}
     }
 
     public void OnTriggerExit2D(Collider2D colisionado)
