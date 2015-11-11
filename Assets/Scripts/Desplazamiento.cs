@@ -37,6 +37,11 @@ public class Desplazamiento : MonoBehaviour
         Saltar();
 
 		Puntaje.PuntajeActual = (int)transform.position.x / 10;
+		if (transform.localPosition.y < PosicionInicialY) {
+			Destroy(this.gameObject);
+			Application.Quit();
+		
+		}
     }
 
     public void Desplazarse()
@@ -80,9 +85,11 @@ public class Desplazamiento : MonoBehaviour
 			Application.Quit();
 		}
 
-        if(colisionado.name == "PF_Final")
+        if(colisionado.name == "PF_Final(Clone)")
         {
             Mensaje.ElMensaje = "GANASTE!";
+			Destroy(this.gameObject);
+			Application.Quit();
         }
     }
 
