@@ -37,14 +37,6 @@ public class Desplazamiento : MonoBehaviour
         Saltar();
 
 		Puntaje.PuntajeActual = (int)transform.position.x / 10;
-        if (this.transform.localPosition.y < PosicionInicialY)
-        {
-            this.gameObject.GetComponent<Rigidbody2D>().gravityScale = 0f;
-            this.gameObject.GetComponent<Rigidbody2D>().isKinematic = true;
-            DireccionActual = Direcciones.Reposo;
-            this.transform.localPosition = new Vector3(this.transform.localPosition.x, PosicionInicialY, 0);
-            Saltando = false;
-        }
     }
 
     public void Desplazarse()
@@ -75,22 +67,28 @@ public class Desplazamiento : MonoBehaviour
 
     public void OnTriggerEnter2D(Collider2D colisionado)
     {
-        if (colisionado.name.Contains("Bloque2") || colisionado.name.Contains("Caja"))
+        if (colisionado.name.Contains("Bloque") || colisionado.name.Contains("Caja"))
         {
             this.gameObject.GetComponent<Rigidbody2D>().isKinematic = true;
             TiempoUltimaActualizacion = DateTime.Now;
             Saltando = false;
         }
+
 		if (colisionado.name == "PF_Enemigo(Clone)")
 		{
 			Destroy(this.gameObject);
 			Application.Quit();
 		}
+
+        if(colisionado.name == "PF_Final")
+        {
+            Mensaje.ElMensaje = "GANASTE!";
+        }
     }
 
     public void OnTriggerExit2D(Collider2D colisionado)
     {
-        if (colisionado.name.Contains("Bloque2") || colisionado.name.Contains("Caja"))
+        if (colisionado.name.Contains("Bloque") || colisionado.name.Contains("Caja"))
             this.gameObject.GetComponent<Rigidbody2D>().isKinematic = false;
     }
 }
